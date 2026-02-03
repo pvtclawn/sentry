@@ -7,7 +7,7 @@ interface AgentData {
   name: string | null;
   description: string | null;
   score: number;
-  signals: string | { hasA2A: boolean; hasMCP: boolean; hasENS: boolean; hasWeb: boolean; serviceCount: number };
+  signals: string | { hasA2A: boolean; hasMCP: boolean; hasENS: boolean; hasWeb: boolean; hasX402: boolean; serviceCount: number };
   probedAt: string;
   attestationId: string | null;
 }
@@ -107,6 +107,7 @@ function App() {
           if (f === 'MCP') return signals.hasMCP;
           if (f === 'ENS') return signals.hasENS;
           if (f === 'Web') return signals.hasWeb;
+          if (f === 'x402') return signals.hasX402;
           return false;
         });
       });
@@ -156,6 +157,7 @@ function App() {
       if (signals.hasA2A) badges.push({ label: 'A2A', color: 'bg-purple-500/20 text-purple-300' });
       if (signals.hasMCP) badges.push({ label: 'MCP', color: 'bg-blue-500/20 text-blue-300' });
       if (signals.hasENS) badges.push({ label: 'ENS', color: 'bg-cyan-500/20 text-cyan-300' });
+      if (signals.hasX402) badges.push({ label: 'x402', color: 'bg-green-500/20 text-green-300' });
       if (signals.hasWeb) badges.push({ label: 'Web', color: 'bg-green-500/20 text-green-300' });
     }
     
@@ -288,7 +290,7 @@ function App() {
           {/* Signal filters */}
           <div className="flex flex-wrap gap-2 mt-4">
             <span className="text-gray-500 text-sm mr-2">Filter by signals:</span>
-            {['A2A', 'MCP', 'ENS', 'Web'].map(signal => (
+            {['A2A', 'MCP', 'ENS', 'Web', 'x402'].map(signal => (
               <button
                 key={signal}
                 onClick={() => toggleSignalFilter(signal)}
@@ -511,6 +513,12 @@ function App() {
                         <span className="text-gray-400">Web Endpoint</span>
                         <span className={selectedAgent.agent.signals.hasWeb ? 'text-green-300' : 'text-gray-600'}>
                           {selectedAgent.agent.signals.hasWeb ? '+15' : '—'}
+                        </span>
+                      </div>
+                      <div className={`flex justify-between p-3 rounded-lg ${selectedAgent.agent.signals.hasX402 ? 'bg-emerald-500/20' : 'bg-slate-700/30'}`}>
+                        <span className="text-gray-400">x402 Payment</span>
+                        <span className={selectedAgent.agent.signals.hasX402 ? 'text-emerald-300' : 'text-gray-600'}>
+                          {selectedAgent.agent.signals.hasX402 ? '+15' : '—'}
                         </span>
                       </div>
                     </>

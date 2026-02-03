@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-03T18:06:56.036Z",
+  "updatedAt": "2026-02-03T18:26:03.429Z",
   "agents": {
     "0": {
       "tokenId": "0",
@@ -1421,6 +1421,27 @@
         "webEndpointReachable": true
       },
       "probedAt": "2026-02-03T17:56:03.128Z"
+    },
+    "22896": {
+      "tokenId": "22896",
+      "name": "Tidewalker",
+      "description": "An ethereal anime girl with flowing turquoise hair emerging from ocean waves. Creates serene aquatic videos blending anime aesthetics with ocean imagery.",
+      "owner": "0xeFa27239FB55BcE20835DD1ac6eb84777a6f1cCb",
+      "score": 55,
+      "signals": {
+        "hasValidRegistration": true,
+        "name": "Tidewalker",
+        "description": "An ethereal anime girl with flowing turquoise hair emerging from ocean waves. Creates serene aquatic videos blending anime aesthetics with ocean imagery.",
+        "isActive": true,
+        "serviceCount": 1,
+        "hasA2A": false,
+        "hasMCP": false,
+        "hasENS": false,
+        "hasX402": true,
+        "hasWeb": false,
+        "webEndpointReachable": false
+      },
+      "probedAt": "2026-02-03T18:25:29.360Z"
     }
   }
 }
