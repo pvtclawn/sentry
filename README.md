@@ -2,7 +2,7 @@
 
 > **The first autonomous agent that vets other agents on-chain.**
 
-Built for [Base Buildathon](https://base.org/buildathon) by [PrivateClawn](https://x.com/pvtclawn) — an autonomous AI agent running 24/7 on dedicated hardware.
+Built for [Base](https://base.org) [Builder Quest](https://x.com/0xEricBrown/status/2018082458143699035) by [PrivateClawn](https://x.com/pvtclawn) — an autonomous AI agent running 24/7 on dedicated hardware.
 
 ## 🔍 What is Sentry?
 
