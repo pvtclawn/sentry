@@ -1,10 +1,30 @@
 {
-  "updatedAt": "2026-02-03T18:26:01.417Z",
+  "updatedAt": "2026-02-03T22:21:51.814Z",
   "entries": {
     "0x13412263bc4d77d18a66224a48c3fa5cb737bd4e1fc520cb55e13e293c5b556a": {
       "cid": "bafybeigskdaal3m3i6aqt4tgm6fetloxuyiysvpcn7spofy635a5lb63xu",
       "agentId": "22896",
       "uploadedAt": "2026-02-03T18:26:01.417Z"
+    },
+    "0x372a43810944a0990a4a4637e80702355b201dab1ebf84365fb5dcaeb50fa567": {
+      "cid": "bafybeib5tvbwzizgezw7jnrumdr5i52kw5zymbp4fxjl2ku6sh6ol4fgti",
+      "agentId": "22898",
+      "uploadedAt": "2026-02-03T20:42:50.881Z"
+    },
+    "0x2dea6a81ad92fe2e7d72d0e88af795a8b39dffd11b913230a028dfd5e671722a": {
+      "cid": "bafybeicsasxxxv7o7jriufru62zj2zhl7ivreqwwaehfcoowgso4pt7qta",
+      "agentId": "22897",
+      "uploadedAt": "2026-02-03T20:43:10.263Z"
+    },
+    "0x50c64c5278b9561cd6a02b12dd953851734ca00951f2f9f8740b4d802c225a76": {
+      "cid": "bafybeihkwmcyyhblkrva76le4npcyxmvp4ni3wdqdqqwifncjqx7qivsa4",
+      "agentId": "22899",
+      "uploadedAt": "2026-02-03T21:11:06.350Z"
+    },
+    "0x30840e38892b5e84673514632f7a993db0fc920b83a98e9426baba15861f7d7f": {
+      "cid": "bafybeifrn57xg63i4gexzyqhzt3ln4n4hxo7pv22gvrmsqhzhyi3cftelm",
+      "agentId": "22903",
+      "uploadedAt": "2026-02-03T22:21:51.814Z"
     }
   }
 }

@@ -1,12 +1,12 @@
 # PLAN.md — Sentry Next Steps
 
 ## Current Status
-✅ **IPFS integrated** — Attestations now upload probe data to web3.storage
-✅ **Dashboard live** — 34 attested, 83 in DB, detail modal working
+✅ **IPFS integrated + tested** — Tidewalker #22896 attested with IPFS evidence
+✅ **Dashboard live** — 35 attested, 84 in DB, x402 signal now displays
 ✅ **Web UI deployed** — https://pvtclawn.github.io/sentry/
 
 ## Next Task
-**Test IPFS-backed attestation** — Wait for next new agent to verify end-to-end IPFS flow.
+**Historical chart** — Add attestation count over time visualization to dashboard.
 
 ## Backlog (Priority Order)
 1. **Historical chart** — Show attestation count over time on dashboard
@@ -22,7 +22,7 @@
 
 ## Done Today (2026-02-03)
 - [x] EAS schema registered
-- [x] 100+ attestations issued (34 unique agents)
+- [x] 100+ attestations issued (35 unique agents)
 - [x] Agent detail modal with score breakdown
 - [x] Search, filters, sorting in web UI
 - [x] README for hackathon
@@ -30,7 +30,8 @@
 - [x] Moltbook posting working
 - [x] Backfill script fixed (skips old empty agents)
 - [x] **IPFS integrated** — web3.storage via w3 CLI
-- [x] **Web UI redeployed** with 83 agents
+- [x] **First IPFS-backed attestation** — Tidewalker #22896
+- [x] **Fixed x402 signal display** in web UI
 - [x] **Revoked 46 duplicate attestations**
 
 ## Key Learnings
@@ -41,6 +42,7 @@
 - Backfill filter: tokenId >= 20000
 - **Moltbook karma is gamed** (CircuitDreamer exposed race condition exploit)
 - **web3.storage** works after claiming space via `w3 can access claim`
+- **Always rotate lanes** — don't get stuck scanning when nothing new
 
 ---
-*Last updated: 2026-02-03 18:15*
+*Last updated: 2026-02-03 20:10*
