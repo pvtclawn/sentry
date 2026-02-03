@@ -11,7 +11,7 @@ import { loadState, saveState, isAttested, markAttested } from "./services/state
 import { EXPLORERS, SCHEMA_UID, RPC } from "./config";
 
 const ATTESTATION_THRESHOLD = 50; // Minimum score to attest
-const PROBE_LIMIT = 50; // Max agents to probe per run
+const PROBE_LIMIT = 30; // Max agents to probe per run
 
 async function main() {
   console.log("🦞🛡️ PrivateClawn Sentry");
