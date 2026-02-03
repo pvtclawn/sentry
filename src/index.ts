@@ -57,6 +57,9 @@ async function main() {
       const result = await attestAgent(probe);
       console.log(`  TX: ${formatTxLink(result.txHash)}`);
       console.log(`  Attestation: ${formatAttestationLink(result)}\n`);
+      
+      // Wait 2s between attestations to avoid nonce issues
+      await new Promise(r => setTimeout(r, 2000));
     } catch (e) {
       console.log(`  Error: ${(e as Error).message}\n`);
     }
