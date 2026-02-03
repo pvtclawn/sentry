@@ -1,5 +1,5 @@
 {
-  "lastScannedBlock": 24374869,
+  "lastScannedBlock": 24375517,
   "attestedAgents": [
     "22882",
     "22877",
@@ -12,7 +12,7 @@
     "22863",
     "22861"
   ],
-  "lastRun": "2026-02-03T07:34:38.464Z",
+  "lastRun": "2026-02-03T09:44:37.129Z",
   "stats": {
     "totalScanned": 30,
     "totalAttested": 10

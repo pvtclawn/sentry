@@ -5,10 +5,11 @@
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import { scanRegistrations, getAgentDetails } from "./services/registry";
-import { probeAgent, calculateScore } from "./services/prober";
+import { probeAgent, calculateScore, packSignals } from "./services/prober";
 import { attestAgent, formatTxLink, formatAttestationLink } from "./services/attester";
-import { loadState, saveState, isAttested, markAttested } from "./services/state";
+import { loadState, saveState, isAttested, markAttested, loadAgentsData, saveAgentsData } from "./services/state";
 import { EXPLORERS, SCHEMA_UID, RPC } from "./config";
+import type { AgentProbe } from "./types";
 
 const ATTESTATION_THRESHOLD = 50; // Minimum score to attest
 const PROBE_LIMIT = 30; // Max agents to probe per run
@@ -22,7 +23,9 @@ async function main() {
   
   // Load state
   const state = loadState();
+  const agentsData = loadAgentsData();
   console.log(`📊 Previously attested: ${state.attestedAgents.length} agents`);
+  console.log(`📚 Agents in database: ${Object.keys(agentsData.agents).length}`);
   
   // Get current block - start from recent if no state
   const client = createPublicClient({
@@ -62,6 +65,18 @@ async function main() {
       const score = calculateScore(probe.signals);
       console.log(`  #${probe.agentId} ${probe.signals.name ?? "Unknown"} - Score: ${score}`);
       
+      // Save to agents database
+      agentsData.agents[probe.agentId] = {
+        tokenId: probe.agentId,
+        name: probe.signals.name,
+        description: probe.signals.description,
+        owner: probe.owner,
+        score,
+        signals: probe.signals,
+        probedAt: probe.probedAt,
+        attestationId: null,
+      };
+      
       probes.push(probe);
       state.stats.totalScanned++;
     } catch (e) {
@@ -85,6 +100,11 @@ async function main() {
       console.log(`  TX: ${formatTxLink(result.txHash)}`);
       console.log(`  Attestation: ${formatAttestationLink(result)}\n`);
       
+      // Update attestation ID in agents data
+      if (agentsData.agents[probe.agentId]) {
+        agentsData.agents[probe.agentId].attestationId = result.uid;
+      }
+      
       markAttested(state, probe.agentId);
       
       // Wait 2s between attestations to avoid nonce issues
@@ -97,6 +117,7 @@ async function main() {
   // Save state
   state.lastScannedBlock = Number(latestBlock);
   saveState(state);
+  saveAgentsData(agentsData);
   
   console.log("✅ Sentry run complete!");
   console.log(`📊 Total attested: ${state.attestedAgents.length}`);

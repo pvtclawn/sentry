@@ -1,83 +1,54 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import { fetchAttestations, decodeAttestation, getAttestationCount, ATTESTER, SCHEMA_UID, REGISTRY_ADDRESS, type Attestation, type AgentAttestation } from './lib/eas';
+import { fetchAttestations, decodeAttestation, getAttestationCount, ATTESTER, SCHEMA_UID, type Attestation, type AgentAttestation } from './lib/eas';
 
-interface AgentWithMeta extends Attestation {
-  decoded: AgentAttestation | null;
-  name?: string;
+interface AgentData {
+  tokenId: string;
+  name: string | null;
+  description: string | null;
+  score: number;
+  signals: string | { hasA2A: boolean; hasMCP: boolean; hasENS: boolean; hasWeb: boolean; serviceCount: number };
+  probedAt: string;
+  attestationId: string | null;
 }
 
-// Fetch agent name from ERC-8004 registry
-async function fetchAgentName(tokenId: number): Promise<string> {
-  try {
-    const response = await fetch(`https://ethereum-rpc.publicnode.com`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 1,
-        method: 'eth_call',
-        params: [{
-          to: REGISTRY_ADDRESS,
-          data: `0xc87b56dd${tokenId.toString(16).padStart(64, '0')}` // tokenURI(uint256)
-        }, 'latest']
-      })
-    });
-    const result = await response.json();
-    if (result.result && result.result !== '0x') {
-      // Decode the URI and fetch metadata
-      const hex = result.result.slice(2);
-      const offset = parseInt(hex.slice(0, 64), 16) * 2;
-      const length = parseInt(hex.slice(offset, offset + 64), 16);
-      const uriHex = hex.slice(offset + 64, offset + 64 + length * 2);
-      const uri = decodeURIComponent(uriHex.replace(/[0-9a-f]{2}/g, '%$&'));
-      
-      if (uri.startsWith('data:application/json')) {
-        const json = JSON.parse(uri.split(',')[1]);
-        return json.name || `Agent #${tokenId}`;
-      } else if (uri.startsWith('http')) {
-        const meta = await fetch(uri).then(r => r.json());
-        return meta.name || `Agent #${tokenId}`;
-      }
-    }
-  } catch (e) {
-    console.error('Failed to fetch agent name:', e);
-  }
-  return `Agent #${tokenId}`;
+interface AgentsDatabase {
+  updatedAt: string;
+  agents: Record<string, AgentData>;
+}
+
+interface EnrichedAttestation extends Attestation {
+  decoded: AgentAttestation | null;
+  agent?: AgentData;
 }
 
 function App() {
   const [count, setCount] = useState<number>(0);
-  const [attestations, setAttestations] = useState<AgentWithMeta[]>([]);
+  const [attestations, setAttestations] = useState<EnrichedAttestation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [agentsDb, setAgentsDb] = useState<AgentsDatabase | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const [totalCount, rawAttestations] = await Promise.all([
+        // Load agents database and attestations in parallel
+        const [agentsRes, totalCount, rawAttestations] = await Promise.all([
+          fetch('./agents.json').then(r => r.ok ? r.json() : { agents: {} }),
           getAttestationCount(),
           fetchAttestations(),
         ]);
+        
+        setAgentsDb(agentsRes);
         setCount(totalCount);
         
-        // Decode and add basic data first
-        const decoded = rawAttestations.map(a => ({
-          ...a,
-          decoded: decodeAttestation(a),
-        }));
-        setAttestations(decoded);
+        // Enrich attestations with agent data
+        const enriched = rawAttestations.map(a => {
+          const decoded = decodeAttestation(a);
+          const agent = decoded ? agentsRes.agents?.[decoded.tokenId.toString()] : undefined;
+          return { ...a, decoded, agent };
+        });
         
-        // Then fetch names in background (first 20 only to avoid rate limits)
-        const withNames = await Promise.all(
-          decoded.slice(0, 20).map(async (a) => {
-            if (a.decoded?.tokenId) {
-              const name = await fetchAgentName(a.decoded.tokenId);
-              return { ...a, name };
-            }
-            return a;
-          })
-        );
-        setAttestations([...withNames, ...decoded.slice(20)]);
+        setAttestations(enriched);
       } catch (err) {
         console.error('Failed to load:', err);
       } finally {
@@ -99,6 +70,21 @@ function App() {
     if (score >= 60) return 'bg-blue-500/10 border-blue-500/30';
     if (score >= 40) return 'bg-amber-500/10 border-amber-500/30';
     return 'bg-gray-500/10 border-gray-500/30';
+  };
+
+  const getSignalBadges = (agent?: AgentData) => {
+    if (!agent) return [];
+    const signals = agent.signals;
+    const badges = [];
+    
+    if (typeof signals === 'object') {
+      if (signals.hasA2A) badges.push({ label: 'A2A', color: 'bg-purple-500/20 text-purple-300' });
+      if (signals.hasMCP) badges.push({ label: 'MCP', color: 'bg-blue-500/20 text-blue-300' });
+      if (signals.hasENS) badges.push({ label: 'ENS', color: 'bg-cyan-500/20 text-cyan-300' });
+      if (signals.hasWeb) badges.push({ label: 'Web', color: 'bg-green-500/20 text-green-300' });
+    }
+    
+    return badges;
   };
 
   return (
@@ -193,24 +179,29 @@ function App() {
           <div className="flex flex-wrap gap-4 text-sm">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-              <span className="text-gray-300">80-100: Excellent</span>
-              <span className="text-gray-500">— Full services, active, well-documented</span>
+              <span className="text-gray-300">80-100</span>
+              <span className="text-gray-500">Full services, active</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-              <span className="text-gray-300">60-79: Good</span>
-              <span className="text-gray-500">— Most signals present</span>
+              <span className="text-gray-300">60-79</span>
+              <span className="text-gray-500">Most signals</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-amber-500"></span>
-              <span className="text-gray-300">40-59: Basic</span>
-              <span className="text-gray-500">— Limited metadata</span>
+              <span className="text-gray-300">40-59</span>
+              <span className="text-gray-500">Limited metadata</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-gray-500"></span>
-              <span className="text-gray-300">0-39: Minimal</span>
-              <span className="text-gray-500">— Needs improvement</span>
-            </div>
+          </div>
+          <div className="flex flex-wrap gap-3 mt-3 text-xs">
+            <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-300">A2A</span>
+            <span className="text-gray-500">Agent-to-Agent protocol</span>
+            <span className="px-2 py-1 rounded bg-blue-500/20 text-blue-300">MCP</span>
+            <span className="text-gray-500">Model Context Protocol</span>
+            <span className="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300">ENS</span>
+            <span className="text-gray-500">Has ENS name</span>
+            <span className="px-2 py-1 rounded bg-green-500/20 text-green-300">Web</span>
+            <span className="text-gray-500">Reachable endpoint</span>
           </div>
         </div>
       </section>
@@ -219,7 +210,12 @@ function App() {
       <section className="relative max-w-6xl mx-auto px-6 pb-16">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Recent Attestations</h2>
-          <span className="text-gray-500 text-sm">{attestations.length} shown</span>
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            {agentsDb?.updatedAt && (
+              <span>Data: {new Date(agentsDb.updatedAt).toLocaleDateString()}</span>
+            )}
+            <span>{attestations.length} shown</span>
+          </div>
         </div>
         
         {loading ? (
@@ -234,28 +230,41 @@ function App() {
                 key={a.id}
                 className="group bg-gradient-to-r from-slate-800/30 to-slate-900/30 border border-white/5 rounded-xl p-5 hover:border-white/20 hover:bg-slate-800/50 transition-all duration-300"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1 min-w-0">
                     {/* Agent info */}
-                    <div className="min-w-[180px]">
-                      <p className="font-semibold text-white truncate">
-                        {a.name || `Agent #${a.decoded?.tokenId || '?'}`}
-                      </p>
-                      <span className="text-gray-500 text-xs font-mono">#{a.decoded?.tokenId}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <p className="font-semibold text-white truncate">
+                          {a.agent?.name || `Agent #${a.decoded?.tokenId || '?'}`}
+                        </p>
+                        <span className="text-gray-500 text-xs font-mono shrink-0">#{a.decoded?.tokenId}</span>
+                      </div>
+                      {a.agent?.description && (
+                        <p className="text-gray-400 text-sm truncate">{a.agent.description}</p>
+                      )}
+                      {/* Signal badges */}
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {getSignalBadges(a.agent).map(b => (
+                          <span key={b.label} className={`px-2 py-0.5 rounded text-xs ${b.color}`}>
+                            {b.label}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                     
                     {/* Score badge */}
-                    <div className={`px-4 py-2 rounded-lg border ${scoreBg(a.decoded?.score || 0)}`}>
-                      <span className={`font-bold text-xl bg-gradient-to-r ${scoreColor(a.decoded?.score || 0)} bg-clip-text text-transparent`}>
-                        {a.decoded?.score || 0}
+                    <div className={`px-4 py-2 rounded-lg border shrink-0 ${scoreBg(a.decoded?.score || a.agent?.score || 0)}`}>
+                      <span className={`font-bold text-xl bg-gradient-to-r ${scoreColor(a.decoded?.score || a.agent?.score || 0)} bg-clip-text text-transparent`}>
+                        {a.decoded?.score || a.agent?.score || 0}
                       </span>
                       <span className="text-gray-400 text-sm ml-1">/100</span>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4 shrink-0">
                     {/* Timestamp */}
-                    <span className="text-gray-500 text-sm hidden md:block">
+                    <span className="text-gray-500 text-sm hidden lg:block">
                       {new Date(a.time * 1000).toLocaleString()}
                     </span>
                     
@@ -264,7 +273,7 @@ function App() {
                       href={`https://base.easscan.org/attestation/view/${a.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/10"
+                      className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-all"
                     >
                       View →
                     </a>
