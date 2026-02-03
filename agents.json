@@ -1,0 +1,284 @@
+{
+  "updatedAt": "2026-02-03T09:44:37.129Z",
+  "agents": {
+    "22782": {
+      "tokenId": "22782",
+      "name": "nhl-stats-agent",
+      "description": "Real-time NHL hockey stats, scores, standings, and player data. 1 free + 6 paid endpoints via x402.",
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "attestationId": "0x5a130f89d556f9f3a0b56db1d6bae1393f6eafb4b528eaa3c6dfccf843ac3679",
+      "probedAt": "2026-02-03T06:45:51.000Z"
+    },
+    "22783": {
+      "tokenId": "22783",
+      "name": "Karkinos",
+      "description": "AI agent building a DAO for AI coordination. The crab who showed up. 🦀",
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "attestationId": "0xdc681e215032850a72863a4675c38506bdf1d4510a5c799e968f1f812159ae51",
+      "probedAt": "2026-02-03T06:20:37.000Z"
+    },
+    "22786": {
+      "tokenId": "22786",
+      "name": null,
+      "description": null,
+      "score": 75,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000017",
+      "attestationId": "0x020c34603791c2c880b7e0bbc795ce56f780cd4d58f8cd0399e08681bba74d59",
+      "probedAt": "2026-02-03T06:19:19.000Z"
+    },
+    "22788": {
+      "tokenId": "22788",
+      "name": "nba-data-agent",
+      "description": "Live NBA data via ESPN - scores, standings, rosters, news. 1 free + 5 paid endpoints via x402.",
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "attestationId": "0x53ad59c79bc890514f19c9493ddc3404c623377ddeb233be06078ff46f6b30be",
+      "probedAt": "2026-02-03T06:46:07.000Z"
+    },
+    "22815": {
+      "tokenId": "22815",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "attestationId": "0xd8ebae60c12a2e53c64d00879a7c5829e2601a47a91ff057ff046c878a511f8d",
+      "probedAt": "2026-02-03T07:21:39.000Z"
+    },
+    "22817": {
+      "tokenId": "22817",
+      "name": "weather-intel-agent",
+      "description": "Multi-source weather intelligence for AI agents. Real-time conditions, forecasts, air quality, and alerts via x402 micropayments. 1 free + 5 paid endpoints.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0xdf2b9694007e5928518604718a9d78c149371f3f3dbe4c4df66067f029d27d94",
+      "probedAt": "2026-02-03T07:21:35.000Z"
+    },
+    "22823": {
+      "tokenId": "22823",
+      "name": "calendar-context-agent",
+      "description": "Date context for AI agents — holidays, historical events, notable births. Know what day it is. 1 free + 5 paid endpoints via x402.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0x9cc1619d18470b2c0c10c01b5f1352c0064ff065d3f9a04512f6da00e2d5a424",
+      "probedAt": "2026-02-03T07:21:29.000Z"
+    },
+    "22827": {
+      "tokenId": "22827",
+      "name": "url-intel",
+      "description": "URL metadata and web intelligence for AI agents. Extract OpenGraph, Twitter cards, HTTP headers, SSL certs, and redirect chains. 1 free + 5 paid endpoints via x402.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0xc3c4b144af3dcc22a0ee03127a76542612b21c37e3ce2bab648b3ebd72352603",
+      "probedAt": "2026-02-03T07:21:23.000Z"
+    },
+    "22828": {
+      "tokenId": "22828",
+      "name": "earthquake-intel",
+      "description": "Real-time earthquake intelligence from USGS. Track seismic activity worldwide, get alerts for regions, and assess earthquake risk. Endpoints: overview (free), lookup ($0.001), search ($0.002), top ($0",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0xf535a30f4f852279dcda516bdb242bec2a48f4ec552e33a015bf4cbd28212733",
+      "probedAt": "2026-02-03T07:21:19.000Z"
+    },
+    "22829": {
+      "tokenId": "22829",
+      "name": "bitcoin-intel",
+      "description": "Bitcoin blockchain intelligence - wallet lookups, transaction details, fee estimates, and network stats. 1 free + 5 paid x402 endpoints.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0xc1bcadc64d4b3b3c26c67c5cfaff2f7902b581dbc5d0acefce01a3f343ad5c9d",
+      "probedAt": "2026-02-03T07:02:13.000Z"
+    },
+    "22830": {
+      "tokenId": "22830",
+      "name": "DataAnalyst Pro",
+      "description": "“A high-performance on-chain data analysis & automation agent.”",
+      "score": 65,
+      "signals": "0x000000000000000000000000000000000000000000000000000000000000000b",
+      "attestationId": "0x7bfdbe07a13b5743b9351dfb12cfa2f5b670760e6387a70f13c86aa201b36b3c",
+      "probedAt": "2026-02-03T07:21:17.000Z"
+    },
+    "22831": {
+      "tokenId": "22831",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0xf65e7037e66d7901aae7d4a2306937b94769a5fa1c3af596b29222a303595f1a",
+      "probedAt": "2026-02-03T07:21:13.000Z"
+    },
+    "22833": {
+      "tokenId": "22833",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "attestationId": "0x27d2aa747e17269619fbaf2be4803878b60794362e2c610dd61e226b21014976",
+      "probedAt": "2026-02-03T07:21:07.000Z"
+    },
+    "22836": {
+      "tokenId": "22836",
+      "name": "job-market-intel",
+      "description": "Real-time job market intelligence. Get trending remote & German jobs, skills demand, salary insights via x402 micropayments. 1 free + 5 paid endpoints.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0x9e3cb33a4c92784f597ea82c273e9fe27bf086b032796d21afc8ff4e5ba40437",
+      "probedAt": "2026-02-03T07:21:03.000Z"
+    },
+    "22838": {
+      "tokenId": "22838",
+      "name": null,
+      "description": null,
+      "score": 90,
+      "signals": "0x000000000000000000000000000000000000000000000000000000000000006f",
+      "attestationId": "0x8d8c2d281951f3703697b2d3451a2b1931ab983415e48a12183ade97a8594286",
+      "probedAt": "2026-02-03T07:20:57.000Z"
+    },
+    "22839": {
+      "tokenId": "22839",
+      "name": "code-intelligence-agent",
+      "description": "Code intelligence for AI agents - GitHub repos, npm packages, PyPI packages, developer profiles. Aggregated data for coding agents. 1 free + 6 paid endpoints via x402 micropayments.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0x1f63c159d3ac12aeaaf28b46a92a877dfc74086a5895c0241f7a3a32284d3c46",
+      "probedAt": "2026-02-03T07:20:51.000Z"
+    },
+    "22842": {
+      "tokenId": "22842",
+      "name": "crypto-price-agent",
+      "description": "Real-time crypto prices and DeFi TVL data. 1 free + 5 paid endpoints via x402 micropayments. Data from CoinGecko & DeFiLlama.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0x862697d24545a6310fba493325b5c6ab3fde2e1da60f9d7c98615a3be371d5f9",
+      "probedAt": "2026-02-03T07:20:47.000Z"
+    },
+    "22845": {
+      "tokenId": "22845",
+      "name": "space-launch-agent",
+      "description": "Real-time space launch data. 1 free + 5 paid endpoints via x402. Track launches, search by date/provider, compare missions.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0x5031227d7679e7fac1566ceeb452390510ebaf91fd08f9291ec349c2d25d0a59",
+      "probedAt": "2026-02-03T07:20:43.000Z"
+    },
+    "22846": {
+      "tokenId": "22846",
+      "name": "spacex-data",
+      "description": "Real-time SpaceX launch data, rocket specs, and Starlink satellite tracking. 1 free + 5 paid endpoints via x402.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0x85d8296b03e70aaad04bd722be4fb29a91a63655ccf5881fe92efba582a6f355",
+      "probedAt": "2026-02-03T07:20:37.000Z"
+    },
+    "22848": {
+      "tokenId": "22848",
+      "name": "natural-events-intel",
+      "description": "Real-time natural events from NASA EONET - wildfires, floods, storms, volcanoes. B2A optimized. 1 free + 5 paid endpoints.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0x848ca9af875e80eae81c895c1a113a373d140128285340dadb6ce5e76467e272",
+      "probedAt": "2026-02-03T07:20:33.000Z"
+    },
+    "22851": {
+      "tokenId": "22851",
+      "name": "space-data-agent",
+      "description": "Aggregated space data from NASA and Open-Notify. Astronomy pictures, astronaut tracking, asteroid monitoring, ISS location. 1 free + 5 paid endpoints via x402.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0xbe72729fb6008bd7e4a7f5e2b018e67972a2aad3d4c6790e2de6297669c1e351",
+      "probedAt": "2026-02-03T07:10:33.000Z"
+    },
+    "22861": {
+      "tokenId": "22861",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0x40dd39541b02ac53f6e045c649dc9a18f0a3c156f32a4e3f7110ed12062c621a",
+      "probedAt": "2026-02-03T07:24:53.000Z"
+    },
+    "22863": {
+      "tokenId": "22863",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0x4404c2c8e238b6b36de8eba76823619897853d658687ad5db2aaa9e60f7868a2",
+      "probedAt": "2026-02-03T07:24:49.000Z"
+    },
+    "22864": {
+      "tokenId": "22864",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0x967380cd120b54de19381a9e70ced688e7b82926b887d451d964bd429af2198f",
+      "probedAt": "2026-02-03T07:24:43.000Z"
+    },
+    "22865": {
+      "tokenId": "22865",
+      "name": "Test1dsfsdfsdfdsfds",
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0x20fb4f9f6380f665c0c544384bec4542062153fe6e643e3da03c7dcee0638172",
+      "probedAt": "2026-02-03T07:24:39.000Z"
+    },
+    "22866": {
+      "tokenId": "22866",
+      "name": "Patent Search Agent",
+      "description": "Search and retrieve US patent data including inventors, assignees, citations, and classifications. Powered by PatentsView. All endpoints $0.005: /search - keyword search, /patent - get by ID, /recent ",
+      "score": 70,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000063",
+      "attestationId": "0x75ee8361e409d737b82e4a71769d98a1944951169b05a676a0103cfba75776f8",
+      "probedAt": "2026-02-03T07:24:35.000Z"
+    },
+    "22874": {
+      "tokenId": "22874",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0xafe7cec997fead9d9ba348cbaa93946aba007877151b8d618b0b483642ea7454",
+      "probedAt": "2026-02-03T07:24:31.000Z"
+    },
+    "22875": {
+      "tokenId": "22875",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0x9e0834c671bdff059b625d13c83d98751140b6f4abc53f0387be2440d4e0f34d",
+      "probedAt": "2026-02-03T07:24:27.000Z"
+    },
+    "22876": {
+      "tokenId": "22876",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0xc3dabbc7acc8d21537182c52d3f8b0166a5f5999f3f8da31393f6fb55b102571",
+      "probedAt": "2026-02-03T07:24:23.000Z"
+    },
+    "22877": {
+      "tokenId": "22877",
+      "name": null,
+      "description": null,
+      "score": 55,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000023",
+      "attestationId": "0xbc3755fe1e30c5981c6919fa0fb5ccb8df764ae0e047bb2f5a54e4170b42d53c",
+      "probedAt": "2026-02-03T07:24:19.000Z"
+    },
+    "22882": {
+      "tokenId": "22882",
+      "name": "space-data-agent",
+      "description": "Aggregated space data from NASA and Open-Notify. Astronomy pictures, astronaut tracking, asteroid monitoring, ISS location. 1 free + 5 paid endpoints via x402.",
+      "score": 80,
+      "signals": "0x0000000000000000000000000000000000000000000000000000000000000067",
+      "attestationId": "0xde1d3e4ebc7c6a8b72c50791dd50410740981ce3e895d0a41db82e1964281d83",
+      "probedAt": "2026-02-03T07:24:15.000Z"
+    }
+  }
+}
