@@ -8,6 +8,8 @@ import { join } from "path";
 import { EAS_ADDRESS, SCHEMA_UID, REGISTRY_ADDRESS, EXPLORERS } from "../config";
 import type { AgentProbe, AttestationResult } from "../types";
 import { calculateScore, packSignals } from "./prober";
+import { uploadProbeToIPFS, getIPFSUrl } from "./ipfs";
+import { registerCID } from "./ipfs-registry";
 
 const VAULT_PATH = join(import.meta.dir, "../../../../.vault");
 const FOUNDRY_PATH = join(process.env.HOME!, ".foundry/bin");
@@ -50,6 +52,25 @@ export async function attestAgent(probe: AgentProbe): Promise<AttestationResult>
   
   console.log(`🏅 Attesting agent #${probe.agentId} (score: ${score})...`);
   
+  // Upload probe data to IPFS (if Pinata configured)
+  let ipfsCid: string | null = null;
+  if (process.env.PINATA_API_KEY && process.env.PINATA_SECRET_KEY) {
+    try {
+      console.log(`  📤 Uploading to IPFS...`);
+      ipfsCid = await uploadProbeToIPFS({
+        agentId: probe.agentId,
+        owner: probe.owner,
+        score,
+        signals: probe.signals as Record<string, unknown>,
+        probedAt: probe.probedAt,
+        schemaUid: SCHEMA_UID,
+      });
+      console.log(`  ✅ IPFS: ${getIPFSUrl(ipfsCid)}`);
+    } catch (e) {
+      console.log(`  ⚠️ IPFS upload failed: ${(e as Error).message}`);
+    }
+  }
+  
   // Encode attestation data using cast without extra flags
   const password = getWalletPassword();
   const pwFile = "/tmp/castpw";
@@ -77,12 +98,19 @@ export async function attestAgent(probe: AgentProbe): Promise<AttestationResult>
     
     console.log(`✅ Attested! TX: ${EXPLORERS.basescan}/tx/${txHash}`);
     
+    // Register IPFS CID if we have one
+    if (ipfsCid && attestationUID !== "unknown") {
+      registerCID(attestationUID, probe.agentId, ipfsCid);
+      console.log(`  📝 Registered CID: ${ipfsCid}`);
+    }
+    
     return {
       agentId: probe.agentId,
       txHash,
       attestationUID,
       score,
       timestamp: verifiedAt,
+      ipfsCid: ipfsCid ?? undefined,
     };
   } finally {
     if (existsSync(pwFile)) {

@@ -46,6 +46,7 @@ export interface AttestationResult {
   attestationUID: string;
   score: number;
   timestamp: number;
+  ipfsCid?: string;
 }
 
 // Signal flags for bit-packing
