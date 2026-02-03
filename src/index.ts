@@ -16,9 +16,9 @@ async function main() {
   console.log(`Schema: ${SCHEMA_UID}`);
   console.log("");
   
-  // Scan last 10k blocks (~1.5 days)
+  // Scan last 50k blocks (~1 week)
   const latestBlock = 24380000n; // Approximate, would fetch dynamically
-  const fromBlock = latestBlock - 10000n;
+  const fromBlock = latestBlock - 50000n;
   
   console.log("📡 Step 1: Scanning registry...");
   const events = await scanRegistrations(fromBlock);
@@ -28,7 +28,7 @@ async function main() {
   console.log("🔍 Step 2: Probing agents...");
   const probes = [];
   
-  for (const event of events.slice(0, 10)) { // Limit for testing
+  for (const event of events.slice(0, 20)) { // Probe 20 at a time
     try {
       const details = await getAgentDetails(event.agentId);
       const probe = await probeAgent(

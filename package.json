@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "twitter-api-v2": "^1.29.0",
     "viem": "^2.29.2"
   },
   "devDependencies": {
