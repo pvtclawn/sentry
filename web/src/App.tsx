@@ -67,7 +67,17 @@ function App() {
 
   // Filter and sort attestations
   const filteredAttestations = useMemo(() => {
-    let result = [...attestations];
+    // First, deduplicate by tokenId (keep newest attestation per agent)
+    const byTokenId = new Map<number, EnrichedAttestation>();
+    for (const a of attestations) {
+      const tokenId = a.decoded?.tokenId;
+      if (tokenId === undefined) continue;
+      const existing = byTokenId.get(tokenId);
+      if (!existing || a.time > existing.time) {
+        byTokenId.set(tokenId, a);
+      }
+    }
+    let result = Array.from(byTokenId.values());
     
     // Search filter
     if (search.trim()) {
@@ -312,7 +322,7 @@ function App() {
             {agentsDb?.updatedAt && (
               <span className="hidden md:inline">Data: {new Date(agentsDb.updatedAt).toLocaleDateString()}</span>
             )}
-            <span>{filteredAttestations.length} of {attestations.length}</span>
+            <span>{filteredAttestations.length} unique agents</span>
           </div>
         </div>
         
