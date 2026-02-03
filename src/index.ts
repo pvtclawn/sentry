@@ -2,13 +2,16 @@
  * Sentry Main Entry Point
  */
 
+import { createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
 import { scanRegistrations, getAgentDetails } from "./services/registry";
 import { probeAgent, calculateScore } from "./services/prober";
 import { attestAgent, formatTxLink, formatAttestationLink } from "./services/attester";
 import { loadState, saveState, isAttested, markAttested } from "./services/state";
-import { SCHEMA_UID } from "./config";
+import { EXPLORERS, SCHEMA_UID, RPC } from "./config";
 
 const ATTESTATION_THRESHOLD = 50; // Minimum score to attest
+const PROBE_LIMIT = 20; // Max agents to probe per run
 
 async function main() {
   console.log("🦞🛡️ PrivateClawn Sentry");
@@ -17,35 +20,33 @@ async function main() {
   console.log(`Schema: ${SCHEMA_UID}`);
   console.log("");
   
+  // Load state
   const state = loadState();
-  console.log(`📊 State: ${state.stats.totalAttested} attested, last block ${state.lastScannedBlock}`);
-  console.log("");
+  console.log(`📊 Previously attested: ${state.attestedAgents.length} agents`);
   
-  // Scan from last block or recent
+  // Get current block
+  const client = createPublicClient({
+    chain: mainnet,
+    transport: http(RPC.ethereum[0]),
+  });
+  const latestBlock = await client.getBlockNumber();
   const fromBlock = state.lastScannedBlock > 0 
-    ? BigInt(state.lastScannedBlock + 1)
-    : 24370000n;
+    ? BigInt(state.lastScannedBlock) 
+    : latestBlock - 50000n;
   
-  console.log("📡 Step 1: Scanning registry...");
-  const events = await scanRegistrations(fromBlock);
-  console.log(`Found ${events.length} registrations\n`);
+  console.log(`\n📡 Step 1: Scanning registry...`);
+  const events = await scanRegistrations(fromBlock, latestBlock);
+  console.log(`Found ${events.length} registrations in range\n`);
   
-  if (events.length > 0) {
-    state.lastScannedBlock = Math.max(...events.map(e => e.block));
-    state.stats.totalScanned += events.length;
-  }
+  // Filter out already attested
+  const newEvents = events.filter(e => !isAttested(state, e.agentId));
+  console.log(`New (not yet attested): ${newEvents.length}\n`);
   
-  // Probe agents (limit to 20 per run)
+  // Probe agents
   console.log("🔍 Step 2: Probing agents...");
   const probes = [];
   
-  for (const event of events.slice(0, 20)) {
-    // Skip already attested
-    if (isAttested(state, event.agentId)) {
-      console.log(`  #${event.agentId} - Already attested, skipping`);
-      continue;
-    }
-    
+  for (const event of newEvents.slice(0, PROBE_LIMIT)) {
     try {
       const details = await getAgentDetails(event.agentId);
       const probe = await probeAgent(
@@ -59,6 +60,7 @@ async function main() {
       console.log(`  #${probe.agentId} ${probe.signals.name ?? "Unknown"} - Score: ${score}`);
       
       probes.push(probe);
+      state.stats.totalScanned++;
     } catch (e) {
       console.log(`  #${event.agentId} - Error: ${(e as Error).message}`);
     }
@@ -70,6 +72,11 @@ async function main() {
   console.log(`${worthy.length} agents meet threshold (>= ${ATTESTATION_THRESHOLD})\n`);
   
   for (const probe of worthy) {
+    if (isAttested(state, probe.agentId)) {
+      console.log(`  #${probe.agentId} already attested, skipping\n`);
+      continue;
+    }
+    
     try {
       const result = await attestAgent(probe);
       console.log(`  TX: ${formatTxLink(result.txHash)}`);
@@ -84,8 +91,12 @@ async function main() {
     }
   }
   
+  // Save state
+  state.lastScannedBlock = Number(latestBlock);
   saveState(state);
-  console.log(`✅ Sentry run complete! ${state.stats.totalAttested} total attested.`);
+  
+  console.log("✅ Sentry run complete!");
+  console.log(`📊 Total attested: ${state.attestedAgents.length}`);
 }
 
 main().catch(console.error);

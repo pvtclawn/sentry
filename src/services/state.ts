@@ -1,11 +1,12 @@
 /**
- * State Management - Track scanned blocks and attested agents
+ * State management for sentry persistence
  */
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 
-const STATE_PATH = join(import.meta.dir, "../../state.json");
+const STATE_DIR = join(import.meta.dir, "../../data");
+const STATE_FILE = join(STATE_DIR, "sentry-state.json");
 
 export interface SentryState {
   lastScannedBlock: number;
@@ -28,20 +29,23 @@ const DEFAULT_STATE: SentryState = {
 };
 
 export function loadState(): SentryState {
-  if (!existsSync(STATE_PATH)) {
-    return { ...DEFAULT_STATE };
-  }
-  
   try {
-    return JSON.parse(readFileSync(STATE_PATH, "utf8"));
+    if (!existsSync(STATE_FILE)) {
+      return { ...DEFAULT_STATE };
+    }
+    return JSON.parse(readFileSync(STATE_FILE, "utf8"));
   } catch {
     return { ...DEFAULT_STATE };
   }
 }
 
 export function saveState(state: SentryState): void {
+  // Ensure data dir exists
+  const { mkdirSync } = require("fs");
+  mkdirSync(STATE_DIR, { recursive: true });
+  
   state.lastRun = new Date().toISOString();
-  writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
+  writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
 }
 
 export function isAttested(state: SentryState, agentId: string): boolean {
