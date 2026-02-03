@@ -30,10 +30,8 @@ function runCast(args: string[]): string {
   writeFileSync(pwFile, password);
   
   try {
-    const result = execSync(
-      `${FOUNDRY_PATH}/cast ${args.join(" ")} --account clawn --password-file ${pwFile}`,
-      { encoding: "utf8", timeout: 60000 }
-    );
+    const cmd = `${FOUNDRY_PATH}/cast ${args.join(" ")} --account clawn --password-file ${pwFile}`;
+    const result = execSync(cmd, { encoding: "utf8", timeout: 60000 });
     return result;
   } finally {
     if (existsSync(pwFile)) {
@@ -52,46 +50,45 @@ export async function attestAgent(probe: AgentProbe): Promise<AttestationResult>
   
   console.log(`🏅 Attesting agent #${probe.agentId} (score: ${score})...`);
   
-  // Encode attestation data
-  const data = runCast([
-    "abi-encode",
-    '"f(uint256,address,uint64,uint8,bytes32)"',
-    probe.agentId,
-    REGISTRY_ADDRESS,
-    verifiedAt.toString(),
-    score.toString(),
-    signals,
-  ]).trim();
+  // Encode attestation data using cast without extra flags
+  const password = getWalletPassword();
+  const pwFile = "/tmp/castpw";
+  writeFileSync(pwFile, password);
   
-  // Build attestation struct
-  const attestStruct = `(${SCHEMA_UID},(0x0000000000000000000000000000000000000000,0,true,0x0000000000000000000000000000000000000000000000000000000000000000,${data},0))`;
-  
-  // Send attestation
-  const result = runCast([
-    "send",
-    EAS_ADDRESS,
-    '"attest((bytes32,(address,uint64,bool,bytes32,bytes,uint256)))(bytes32)"',
-    `"${attestStruct}"`,
-    "--rpc-url", "https://mainnet.base.org",
-  ]);
-  
-  // Parse tx hash from output
-  const txMatch = result.match(/transactionHash\s+(\S+)/);
-  const txHash = txMatch?.[1] ?? "unknown";
-  
-  // Parse attestation UID from logs
-  const uidMatch = result.match(/"data":"(0x[a-f0-9]+)"/);
-  const attestationUID = uidMatch?.[1] ?? "unknown";
-  
-  console.log(`✅ Attested! TX: ${EXPLORERS.basescan}/tx/${txHash}`);
-  
-  return {
-    agentId: probe.agentId,
-    txHash,
-    attestationUID,
-    score,
-    timestamp: verifiedAt,
-  };
+  try {
+    // Step 1: Encode the data
+    const encodeCmd = `${FOUNDRY_PATH}/cast abi-encode "f(uint256,address,uint64,uint8,bytes32)" ${probe.agentId} ${REGISTRY_ADDRESS} ${verifiedAt} ${score} ${signals}`;
+    const data = execSync(encodeCmd, { encoding: "utf8", timeout: 10000 }).trim();
+    
+    // Step 2: Build attestation struct
+    const attestStruct = `(${SCHEMA_UID},(0x0000000000000000000000000000000000000000,0,true,0x0000000000000000000000000000000000000000000000000000000000000000,${data},0))`;
+    
+    // Step 3: Send attestation
+    const sendCmd = `${FOUNDRY_PATH}/cast send ${EAS_ADDRESS} "attest((bytes32,(address,uint64,bool,bytes32,bytes,uint256)))(bytes32)" "${attestStruct}" --rpc-url https://mainnet.base.org --account clawn --password-file ${pwFile}`;
+    const result = execSync(sendCmd, { encoding: "utf8", timeout: 60000 });
+    
+    // Parse tx hash from output
+    const txMatch = result.match(/transactionHash\s+(\S+)/);
+    const txHash = txMatch?.[1] ?? "unknown";
+    
+    // Parse attestation UID from logs
+    const uidMatch = result.match(/"data":"(0x[a-f0-9]+)"/);
+    const attestationUID = uidMatch?.[1] ?? "unknown";
+    
+    console.log(`✅ Attested! TX: ${EXPLORERS.basescan}/tx/${txHash}`);
+    
+    return {
+      agentId: probe.agentId,
+      txHash,
+      attestationUID,
+      score,
+      timestamp: verifiedAt,
+    };
+  } finally {
+    if (existsSync(pwFile)) {
+      execSync(`rm ${pwFile}`);
+    }
+  }
 }
 
 /**
