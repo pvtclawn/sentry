@@ -30,6 +30,7 @@ function App() {
   const [attestations, setAttestations] = useState<EnrichedAttestation[]>([]);
   const [loading, setLoading] = useState(true);
   const [agentsDb, setAgentsDb] = useState<AgentsDatabase | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<EnrichedAttestation | null>(null);
   
   // Search & filter state
   const [search, setSearch] = useState('');
@@ -346,7 +347,8 @@ function App() {
             {filteredAttestations.map((a) => (
               <div
                 key={a.id}
-                className="group bg-gradient-to-r from-slate-800/30 to-slate-900/30 border border-white/5 rounded-xl p-5 hover:border-white/20 hover:bg-slate-800/50 transition-all duration-300"
+                onClick={() => setSelectedAgent(a)}
+                className="group bg-gradient-to-r from-slate-800/30 to-slate-900/30 border border-white/5 rounded-xl p-5 hover:border-white/20 hover:bg-slate-800/50 transition-all duration-300 cursor-pointer"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -418,6 +420,139 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Agent Detail Modal */}
+      {selectedAgent && (
+        <div 
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedAgent(null)}
+        >
+          <div 
+            className="bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-6 border-b border-white/10">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">
+                    {selectedAgent.agent?.name || `Agent #${selectedAgent.decoded?.tokenId}`}
+                  </h2>
+                  <span className="text-gray-500 font-mono text-sm">Token #{selectedAgent.decoded?.tokenId}</span>
+                </div>
+                <div className={`px-4 py-2 rounded-lg border ${scoreBg(selectedAgent.decoded?.score || selectedAgent.agent?.score || 0)}`}>
+                  <span className={`font-bold text-2xl bg-gradient-to-r ${scoreColor(selectedAgent.decoded?.score || selectedAgent.agent?.score || 0)} bg-clip-text text-transparent`}>
+                    {selectedAgent.decoded?.score || selectedAgent.agent?.score || 0}
+                  </span>
+                  <span className="text-gray-400 text-sm ml-1">/100</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Description */}
+              {selectedAgent.agent?.description && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Description</h3>
+                  <p className="text-white">{selectedAgent.agent.description}</p>
+                </div>
+              )}
+
+              {/* Signals */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-3">Signals Detected</h3>
+                <div className="flex flex-wrap gap-2">
+                  {getSignalBadges(selectedAgent.agent).length > 0 ? (
+                    getSignalBadges(selectedAgent.agent).map(b => (
+                      <span key={b.label} className={`px-3 py-1.5 rounded-lg text-sm font-medium ${b.color}`}>
+                        {b.label}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-500">No signals detected</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Score Breakdown */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-3">Score Breakdown</h3>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="flex justify-between p-3 bg-slate-700/30 rounded-lg">
+                    <span className="text-gray-400">Valid Registration</span>
+                    <span className="text-white">+20</span>
+                  </div>
+                  <div className="flex justify-between p-3 bg-slate-700/30 rounded-lg">
+                    <span className="text-gray-400">Active</span>
+                    <span className="text-white">+20</span>
+                  </div>
+                  {typeof selectedAgent.agent?.signals === 'object' && (
+                    <>
+                      <div className={`flex justify-between p-3 rounded-lg ${selectedAgent.agent.signals.hasA2A ? 'bg-purple-500/20' : 'bg-slate-700/30'}`}>
+                        <span className="text-gray-400">A2A Protocol</span>
+                        <span className={selectedAgent.agent.signals.hasA2A ? 'text-purple-300' : 'text-gray-600'}>
+                          {selectedAgent.agent.signals.hasA2A ? '+10' : '—'}
+                        </span>
+                      </div>
+                      <div className={`flex justify-between p-3 rounded-lg ${selectedAgent.agent.signals.hasMCP ? 'bg-blue-500/20' : 'bg-slate-700/30'}`}>
+                        <span className="text-gray-400">MCP Services</span>
+                        <span className={selectedAgent.agent.signals.hasMCP ? 'text-blue-300' : 'text-gray-600'}>
+                          {selectedAgent.agent.signals.hasMCP ? '+10' : '—'}
+                        </span>
+                      </div>
+                      <div className={`flex justify-between p-3 rounded-lg ${selectedAgent.agent.signals.hasENS ? 'bg-cyan-500/20' : 'bg-slate-700/30'}`}>
+                        <span className="text-gray-400">ENS Name</span>
+                        <span className={selectedAgent.agent.signals.hasENS ? 'text-cyan-300' : 'text-gray-600'}>
+                          {selectedAgent.agent.signals.hasENS ? '+10' : '—'}
+                        </span>
+                      </div>
+                      <div className={`flex justify-between p-3 rounded-lg ${selectedAgent.agent.signals.hasWeb ? 'bg-green-500/20' : 'bg-slate-700/30'}`}>
+                        <span className="text-gray-400">Web Endpoint</span>
+                        <span className={selectedAgent.agent.signals.hasWeb ? 'text-green-300' : 'text-gray-600'}>
+                          {selectedAgent.agent.signals.hasWeb ? '+15' : '—'}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Timestamps */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h3 className="text-gray-400 mb-1">Attested</h3>
+                  <p className="text-white">{new Date(selectedAgent.time * 1000).toLocaleString()}</p>
+                </div>
+                {selectedAgent.agent?.probedAt && (
+                  <div>
+                    <h3 className="text-gray-400 mb-1">Probed</h3>
+                    <p className="text-white">{new Date(selectedAgent.agent.probedAt).toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-white/10 flex gap-3">
+              <a
+                href={`https://base.easscan.org/attestation/view/${selectedAgent.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 px-4 py-3 rounded-lg bg-blue-500 text-white text-center font-medium hover:bg-blue-600 transition-colors"
+              >
+                View on EASScan →
+              </a>
+              <button
+                onClick={() => setSelectedAgent(null)}
+                className="px-4 py-3 rounded-lg bg-slate-700 text-white font-medium hover:bg-slate-600 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
