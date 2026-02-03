@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { fetchAttestations, decodeAttestation, getAttestationCount, ATTESTER, SCHEMA_UID, type Attestation, type AgentAttestation } from './lib/eas';
 
@@ -22,16 +22,24 @@ interface EnrichedAttestation extends Attestation {
   agent?: AgentData;
 }
 
+type SortOption = 'newest' | 'oldest' | 'score-high' | 'score-low' | 'name';
+type ScoreFilter = 'all' | '80+' | '60+' | '40+';
+
 function App() {
   const [count, setCount] = useState<number>(0);
   const [attestations, setAttestations] = useState<EnrichedAttestation[]>([]);
   const [loading, setLoading] = useState(true);
   const [agentsDb, setAgentsDb] = useState<AgentsDatabase | null>(null);
+  
+  // Search & filter state
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [scoreFilter, setScoreFilter] = useState<ScoreFilter>('all');
+  const [signalFilter, setSignalFilter] = useState<string[]>([]);
 
   useEffect(() => {
     async function load() {
       try {
-        // Load agents database and attestations in parallel
         const [agentsRes, totalCount, rawAttestations] = await Promise.all([
           fetch('./agents.json').then(r => r.ok ? r.json() : { agents: {} }),
           getAttestationCount(),
@@ -41,7 +49,6 @@ function App() {
         setAgentsDb(agentsRes);
         setCount(totalCount);
         
-        // Enrich attestations with agent data
         const enriched = rawAttestations.map(a => {
           const decoded = decodeAttestation(a);
           const agent = decoded ? agentsRes.agents?.[decoded.tokenId.toString()] : undefined;
@@ -57,6 +64,63 @@ function App() {
     }
     load();
   }, []);
+
+  // Filter and sort attestations
+  const filteredAttestations = useMemo(() => {
+    let result = [...attestations];
+    
+    // Search filter
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(a => {
+        const name = a.agent?.name?.toLowerCase() || '';
+        const desc = a.agent?.description?.toLowerCase() || '';
+        const id = a.decoded?.tokenId?.toString() || '';
+        return name.includes(q) || desc.includes(q) || id.includes(q);
+      });
+    }
+    
+    // Score filter
+    if (scoreFilter !== 'all') {
+      const minScore = parseInt(scoreFilter);
+      result = result.filter(a => (a.decoded?.score || a.agent?.score || 0) >= minScore);
+    }
+    
+    // Signal filter
+    if (signalFilter.length > 0) {
+      result = result.filter(a => {
+        const signals = a.agent?.signals;
+        if (typeof signals !== 'object') return false;
+        return signalFilter.every(f => {
+          if (f === 'A2A') return signals.hasA2A;
+          if (f === 'MCP') return signals.hasMCP;
+          if (f === 'ENS') return signals.hasENS;
+          if (f === 'Web') return signals.hasWeb;
+          return false;
+        });
+      });
+    }
+    
+    // Sort
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest': return b.time - a.time;
+        case 'oldest': return a.time - b.time;
+        case 'score-high': return (b.decoded?.score || b.agent?.score || 0) - (a.decoded?.score || a.agent?.score || 0);
+        case 'score-low': return (a.decoded?.score || a.agent?.score || 0) - (b.decoded?.score || b.agent?.score || 0);
+        case 'name': return (a.agent?.name || 'zzz').localeCompare(b.agent?.name || 'zzz');
+        default: return 0;
+      }
+    });
+    
+    return result;
+  }, [attestations, search, sortBy, scoreFilter, signalFilter]);
+
+  const toggleSignalFilter = (signal: string) => {
+    setSignalFilter(prev => 
+      prev.includes(signal) ? prev.filter(s => s !== signal) : [...prev, signal]
+    );
+  };
 
   const scoreColor = (score: number) => {
     if (score >= 80) return 'from-emerald-500 to-green-400';
@@ -134,7 +198,6 @@ function App() {
       {/* Hero Stats */}
       <section className="relative max-w-6xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Main stat */}
           <div className="md:col-span-1 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
             <p className="text-gray-400 text-sm font-medium mb-2">Total Attestations</p>
             <p className="text-6xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
@@ -143,7 +206,6 @@ function App() {
             <p className="text-gray-500 text-sm mt-2">agents verified on-chain</p>
           </div>
           
-          {/* Attester */}
           <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
             <p className="text-gray-400 text-sm font-medium mb-2">Attester</p>
             <a
@@ -157,7 +219,6 @@ function App() {
             <p className="text-gray-500 text-sm mt-3">pvtclawn.base.eth</p>
           </div>
           
-          {/* Network */}
           <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
             <p className="text-gray-400 text-sm font-medium mb-2">Network</p>
             <div className="flex items-center gap-3">
@@ -172,36 +233,71 @@ function App() {
         </div>
       </section>
 
-      {/* Score Legend */}
-      <section className="relative max-w-6xl mx-auto px-6 pb-8">
+      {/* Search & Filters */}
+      <section className="relative max-w-6xl mx-auto px-6 pb-6">
         <div className="bg-gradient-to-br from-slate-800/30 to-slate-900/30 border border-white/5 rounded-xl p-5">
-          <h3 className="text-sm font-medium text-gray-400 mb-3">Score Legend</h3>
-          <div className="flex flex-wrap gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-              <span className="text-gray-300">80-100</span>
-              <span className="text-gray-500">Full services, active</span>
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search by name, description, or ID..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
+              />
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-              <span className="text-gray-300">60-79</span>
-              <span className="text-gray-500">Most signals</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-amber-500"></span>
-              <span className="text-gray-300">40-59</span>
-              <span className="text-gray-500">Limited metadata</span>
-            </div>
+            
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="px-4 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="score-high">Score: High → Low</option>
+              <option value="score-low">Score: Low → High</option>
+              <option value="name">Name A-Z</option>
+            </select>
+            
+            {/* Score filter */}
+            <select
+              value={scoreFilter}
+              onChange={(e) => setScoreFilter(e.target.value as ScoreFilter)}
+              className="px-4 py-2.5 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+            >
+              <option value="all">All scores</option>
+              <option value="80+">80+ Excellent</option>
+              <option value="60+">60+ Good</option>
+              <option value="40+">40+ Basic</option>
+            </select>
           </div>
-          <div className="flex flex-wrap gap-3 mt-3 text-xs">
-            <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-300">A2A</span>
-            <span className="text-gray-500">Agent-to-Agent protocol</span>
-            <span className="px-2 py-1 rounded bg-blue-500/20 text-blue-300">MCP</span>
-            <span className="text-gray-500">Model Context Protocol</span>
-            <span className="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300">ENS</span>
-            <span className="text-gray-500">Has ENS name</span>
-            <span className="px-2 py-1 rounded bg-green-500/20 text-green-300">Web</span>
-            <span className="text-gray-500">Reachable endpoint</span>
+          
+          {/* Signal filters */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            <span className="text-gray-500 text-sm mr-2">Filter by signals:</span>
+            {['A2A', 'MCP', 'ENS', 'Web'].map(signal => (
+              <button
+                key={signal}
+                onClick={() => toggleSignalFilter(signal)}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${
+                  signalFilter.includes(signal)
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-slate-700/50 text-gray-400 hover:bg-slate-700'
+                }`}
+              >
+                {signal}
+              </button>
+            ))}
+            {(search || scoreFilter !== 'all' || signalFilter.length > 0) && (
+              <button
+                onClick={() => { setSearch(''); setScoreFilter('all'); setSignalFilter([]); }}
+                className="px-3 py-1 rounded-lg text-sm text-red-400 hover:text-red-300 transition-colors"
+              >
+                Clear all
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -209,12 +305,14 @@ function App() {
       {/* Recent Attestations */}
       <section className="relative max-w-6xl mx-auto px-6 pb-16">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Recent Attestations</h2>
+          <h2 className="text-xl font-semibold">
+            {search || scoreFilter !== 'all' || signalFilter.length > 0 ? 'Filtered Results' : 'Recent Attestations'}
+          </h2>
           <div className="flex items-center gap-4 text-sm text-gray-500">
             {agentsDb?.updatedAt && (
-              <span>Data: {new Date(agentsDb.updatedAt).toLocaleDateString()}</span>
+              <span className="hidden md:inline">Data: {new Date(agentsDb.updatedAt).toLocaleDateString()}</span>
             )}
-            <span>{attestations.length} shown</span>
+            <span>{filteredAttestations.length} of {attestations.length}</span>
           </div>
         </div>
         
@@ -223,16 +321,25 @@ function App() {
             <div className="inline-block w-8 h-8 border-2 border-white/20 border-t-white/80 rounded-full animate-spin" />
             <p className="text-gray-500 mt-4">Loading attestations...</p>
           </div>
+        ) : filteredAttestations.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-gray-500">No agents match your filters</p>
+            <button
+              onClick={() => { setSearch(''); setScoreFilter('all'); setSignalFilter([]); }}
+              className="mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+            >
+              Clear filters
+            </button>
+          </div>
         ) : (
           <div className="space-y-3">
-            {attestations.map((a) => (
+            {filteredAttestations.map((a) => (
               <div
                 key={a.id}
                 className="group bg-gradient-to-r from-slate-800/30 to-slate-900/30 border border-white/5 rounded-xl p-5 hover:border-white/20 hover:bg-slate-800/50 transition-all duration-300"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-start gap-4 flex-1 min-w-0">
-                    {/* Agent info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-1">
                         <p className="font-semibold text-white truncate">
@@ -243,7 +350,6 @@ function App() {
                       {a.agent?.description && (
                         <p className="text-gray-400 text-sm truncate">{a.agent.description}</p>
                       )}
-                      {/* Signal badges */}
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {getSignalBadges(a.agent).map(b => (
                           <span key={b.label} className={`px-2 py-0.5 rounded text-xs ${b.color}`}>
@@ -253,7 +359,6 @@ function App() {
                       </div>
                     </div>
                     
-                    {/* Score badge */}
                     <div className={`px-4 py-2 rounded-lg border shrink-0 ${scoreBg(a.decoded?.score || a.agent?.score || 0)}`}>
                       <span className={`font-bold text-xl bg-gradient-to-r ${scoreColor(a.decoded?.score || a.agent?.score || 0)} bg-clip-text text-transparent`}>
                         {a.decoded?.score || a.agent?.score || 0}
@@ -263,12 +368,10 @@ function App() {
                   </div>
                   
                   <div className="flex items-center gap-4 shrink-0">
-                    {/* Timestamp */}
                     <span className="text-gray-500 text-sm hidden lg:block">
                       {new Date(a.time * 1000).toLocaleString()}
                     </span>
                     
-                    {/* View link */}
                     <a
                       href={`https://base.easscan.org/attestation/view/${a.id}`}
                       target="_blank"
@@ -296,20 +399,10 @@ function App() {
             {' '}• First autonomous agent vetting other agents
           </p>
           <div className="flex items-center gap-6">
-            <a
-              href="https://github.com/pvtclawn/sentry"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
+            <a href="https://github.com/pvtclawn/sentry" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
               GitHub
             </a>
-            <a
-              href="https://warpcast.com/pvtclawn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
+            <a href="https://warpcast.com/pvtclawn" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
               Farcaster
             </a>
           </div>
