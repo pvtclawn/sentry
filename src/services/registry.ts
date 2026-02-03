@@ -55,7 +55,7 @@ export async function fetchRegistration(uri: string): Promise<AgentRegistration 
 }
 
 /**
- * Scan for new registrations in block range
+ * Scan for new registrations in block range (handles chunking for RPC limits)
  */
 export async function scanRegistrations(
   fromBlock: bigint,
@@ -66,20 +66,40 @@ export async function scanRegistrations(
   
   console.log(`🔍 Scanning blocks ${fromBlock} to ${latestBlock}...`);
   
-  const logs = await client.getLogs({
-    address: REGISTRY_ADDRESS,
-    event: parseAbiItem("event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"),
-    args: { from: "0x0000000000000000000000000000000000000000" }, // Mints only
-    fromBlock,
-    toBlock: latestBlock,
-  });
+  const CHUNK_SIZE = 10000n; // RPC limit
+  const allEvents: RegistryEvent[] = [];
   
-  return logs.map(log => ({
-    agentId: log.args.tokenId!.toString(),
-    owner: log.args.to!,
-    block: Number(log.blockNumber),
-    txHash: log.transactionHash,
-  }));
+  let currentFrom = fromBlock;
+  while (currentFrom < latestBlock) {
+    const currentTo = currentFrom + CHUNK_SIZE > latestBlock 
+      ? latestBlock 
+      : currentFrom + CHUNK_SIZE;
+    
+    try {
+      const logs = await client.getLogs({
+        address: REGISTRY_ADDRESS,
+        event: parseAbiItem("event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"),
+        args: { from: "0x0000000000000000000000000000000000000000" }, // Mints only
+        fromBlock: currentFrom,
+        toBlock: currentTo,
+      });
+      
+      for (const log of logs) {
+        allEvents.push({
+          agentId: log.args.tokenId!.toString(),
+          owner: log.args.to!,
+          block: Number(log.blockNumber),
+          txHash: log.transactionHash,
+        });
+      }
+    } catch (e) {
+      console.log(`  ⚠️ Error scanning ${currentFrom}-${currentTo}: ${(e as Error).message.slice(0, 50)}`);
+    }
+    
+    currentFrom = currentTo + 1n;
+  }
+  
+  return allEvents;
 }
 
 /**
