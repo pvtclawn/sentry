@@ -1,1 +1,24 @@
-{"lastScannedBlock":0,"attestedAgents":[],"lastRun":"","stats":{"totalScanned":0,"totalAttested":0}}
+{
+  "lastScannedBlock": 24374772,
+  "attestedAgents": [
+    "22882",
+    "22877",
+    "22875",
+    "22874",
+    "22866",
+    "22865",
+    "22864",
+    "22863",
+    "22848",
+    "22846",
+    "22845",
+    "22842",
+    "22839",
+    "22838"
+  ],
+  "lastRun": "2026-02-03T07:16:56.000Z",
+  "stats": {
+    "totalScanned": 50,
+    "totalAttested": 14
+  }
+}
