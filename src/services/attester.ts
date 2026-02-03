@@ -52,23 +52,21 @@ export async function attestAgent(probe: AgentProbe): Promise<AttestationResult>
   
   console.log(`🏅 Attesting agent #${probe.agentId} (score: ${score})...`);
   
-  // Upload probe data to IPFS (if Pinata configured)
+  // Upload probe data to IPFS
   let ipfsCid: string | null = null;
-  if (process.env.PINATA_API_KEY && process.env.PINATA_SECRET_KEY) {
-    try {
-      console.log(`  📤 Uploading to IPFS...`);
-      ipfsCid = await uploadProbeToIPFS({
-        agentId: probe.agentId,
-        owner: probe.owner,
-        score,
-        signals: probe.signals as Record<string, unknown>,
-        probedAt: probe.probedAt,
-        schemaUid: SCHEMA_UID,
-      });
-      console.log(`  ✅ IPFS: ${getIPFSUrl(ipfsCid)}`);
-    } catch (e) {
-      console.log(`  ⚠️ IPFS upload failed: ${(e as Error).message}`);
-    }
+  try {
+    console.log(`  📤 Uploading to IPFS...`);
+    ipfsCid = await uploadProbeToIPFS({
+      agentId: probe.agentId,
+      owner: probe.owner,
+      score,
+      signals: probe.signals as Record<string, unknown>,
+      probedAt: probe.probedAt,
+      schemaUid: SCHEMA_UID,
+    });
+    console.log(`  ✅ IPFS: ${getIPFSUrl(ipfsCid)}`);
+  } catch (e) {
+    console.log(`  ⚠️ IPFS upload failed: ${(e as Error).message}`);
   }
   
   // Encode attestation data using cast without extra flags
