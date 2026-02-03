@@ -30,7 +30,18 @@ export interface AgentAttestation {
   registry: string;
   timestamp: number;
   score: number;
-  features: number;
+  signals: string;
+}
+
+function parseValue(val: unknown): number | string {
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') return val;
+  if (val && typeof val === 'object') {
+    const obj = val as Record<string, unknown>;
+    if (obj.hex) return parseInt(obj.hex as string, 16);
+    if (obj.value !== undefined) return parseValue(obj.value);
+  }
+  return 0;
 }
 
 export async function fetchAttestations(): Promise<Attestation[]> {
@@ -64,14 +75,23 @@ export async function fetchAttestations(): Promise<Attestation[]> {
 export function decodeAttestation(attestation: Attestation): AgentAttestation | null {
   try {
     const decoded = JSON.parse(attestation.decodedDataJson);
+    
+    // Fields: agentId, registry, verifiedAt, score, signals
+    const agentId = decoded.find((f: {name: string}) => f.name === 'agentId');
+    const registry = decoded.find((f: {name: string}) => f.name === 'registry');
+    const verifiedAt = decoded.find((f: {name: string}) => f.name === 'verifiedAt');
+    const score = decoded.find((f: {name: string}) => f.name === 'score');
+    const signals = decoded.find((f: {name: string}) => f.name === 'signals');
+
     return {
-      tokenId: Number(decoded[0]?.value?.value || 0),
-      registry: decoded[1]?.value?.value || '',
-      timestamp: Number(decoded[2]?.value?.value || 0),
-      score: Number(decoded[3]?.value?.value || 0),
-      features: Number(decoded[4]?.value?.value || 0),
+      tokenId: Number(parseValue(agentId?.value?.value)),
+      registry: String(parseValue(registry?.value?.value) || REGISTRY_ADDRESS),
+      timestamp: Number(parseValue(verifiedAt?.value?.value)),
+      score: Number(parseValue(score?.value?.value)),
+      signals: String(parseValue(signals?.value?.value) || '0x0'),
     };
-  } catch {
+  } catch (e) {
+    console.error('Decode error:', e);
     return null;
   }
 }
