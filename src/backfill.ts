@@ -58,11 +58,22 @@ async function main() {
   
   console.log(`\nFound ${allEvents.length} total registrations`);
   
-  // Filter out already attested and reverse to process newest first
+  // Filter out already attested, already in DB with low score, and old token IDs
+  const MIN_TOKEN_ID = 20000; // Skip old empty registrations
   const newEvents = allEvents
-    .filter(e => !isAttested(state, e.agentId))
-    .reverse();
-  console.log(`New (not yet attested): ${newEvents.length}`);
+    .filter(e => {
+      const id = parseInt(e.agentId);
+      // Skip if already attested
+      if (isAttested(state, e.agentId)) return false;
+      // Skip old token IDs (mostly empty)
+      if (id < MIN_TOKEN_ID) return false;
+      // Skip if already in DB with score 0
+      const existing = agentsData.agents[e.agentId];
+      if (existing && existing.score === 0) return false;
+      return true;
+    })
+    .reverse(); // Process newest first
+  console.log(`New (filtered, not attested, tokenId >= ${MIN_TOKEN_ID}): ${newEvents.length}`);
   
   if (newEvents.length === 0) {
     console.log("\n✅ Nothing to backfill!");
