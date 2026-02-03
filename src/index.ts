@@ -24,12 +24,13 @@ async function main() {
   const state = loadState();
   console.log(`📊 Previously attested: ${state.attestedAgents.length} agents`);
   
-  // Get current block
+  // Get current block - start from recent if no state
   const client = createPublicClient({
     chain: mainnet,
     transport: http(RPC.ethereum[0]),
   });
   const latestBlock = await client.getBlockNumber();
+  // Start from ~1 week ago if no state, or from last scanned
   const fromBlock = state.lastScannedBlock > 0 
     ? BigInt(state.lastScannedBlock) 
     : latestBlock - 50000n;
@@ -38,8 +39,10 @@ async function main() {
   const events = await scanRegistrations(fromBlock, latestBlock);
   console.log(`Found ${events.length} registrations in range\n`);
   
-  // Filter out already attested
-  const newEvents = events.filter(e => !isAttested(state, e.agentId));
+  // Filter out already attested and reverse to get newest first
+  const newEvents = events
+    .filter(e => !isAttested(state, e.agentId))
+    .reverse();
   console.log(`New (not yet attested): ${newEvents.length}\n`);
   
   // Probe agents
