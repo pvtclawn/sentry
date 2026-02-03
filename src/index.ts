@@ -16,9 +16,9 @@ async function main() {
   console.log(`Schema: ${SCHEMA_UID}`);
   console.log("");
   
-  // Scan last 50k blocks (~1 week)
+  // Scan last 10k blocks (~1.5 days) - RPC limit
   const latestBlock = 24380000n; // Approximate, would fetch dynamically
-  const fromBlock = latestBlock - 50000n;
+  const fromBlock = latestBlock - 10000n;
   
   console.log("📡 Step 1: Scanning registry...");
   const events = await scanRegistrations(fromBlock);
