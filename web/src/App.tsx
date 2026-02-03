@@ -172,21 +172,21 @@ function App() {
 
       {/* Header */}
       <header className="relative border-b border-white/5 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="text-3xl">🦞🛡️</div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="text-2xl sm:text-3xl">🦞🛡️</div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                 Base Agent Sentry
               </h1>
-              <p className="text-sm text-gray-500">Autonomous agent verification on Base</p>
+              <p className="text-xs sm:text-sm text-gray-500">Autonomous agent verification on Base</p>
             </div>
           </div>
           <a
             href={`https://base.easscan.org/schema/view/${SCHEMA_UID}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-sm font-medium"
+            className="px-3 sm:px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-xs sm:text-sm font-medium whitespace-nowrap"
           >
             View Schema →
           </a>
@@ -194,10 +194,10 @@ function App() {
       </header>
 
       {/* What is Sentry? */}
-      <section className="relative max-w-6xl mx-auto px-6 pt-12">
-        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold mb-2">🔍 What is Base Agent Sentry?</h2>
-          <p className="text-gray-400 text-sm leading-relaxed">
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
+        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/10 rounded-2xl p-4 sm:p-6 backdrop-blur-sm">
+          <h2 className="text-base sm:text-lg font-semibold mb-2">🔍 What is Base Agent Sentry?</h2>
+          <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
             The first autonomous agent that <strong className="text-white">vets other agents</strong>. 
             Sentry monitors the ERC-8004 Agent Registry on Ethereum, probes each agent for reliability signals 
             (A2A support, MCP services, metadata quality), and issues <strong className="text-white">on-chain attestations</strong> via 
@@ -207,11 +207,11 @@ function App() {
       </section>
 
       {/* Hero Stats */}
-      <section className="relative max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="sm:col-span-2 md:col-span-1 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-sm">
             <p className="text-gray-400 text-sm font-medium mb-2">Total Attestations</p>
-            <p className="text-6xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+            <p className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
               {loading ? '...' : count.toLocaleString()}
             </p>
             <p className="text-gray-500 text-sm mt-2">agents verified on-chain</p>

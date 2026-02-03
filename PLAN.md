@@ -1,16 +1,16 @@
 # PLAN.md — Sentry Next Steps
 
 ## Current Status
-✅ **Demo ready** — Dashboard live, 32 attested, detail modal working
+✅ **Demo ready** — Dashboard live, 32 attested, 75 in DB, detail modal working
 
 ## Next Task
-**Fix backfill script** — Currently processes oldest agents first (all score 0). Need to filter by recent registrations or probe more intelligently.
+**Deploy updated agents.json** — Backfill added 43 new agents, redeploy web UI to show them.
 
 ## Backlog
-1. **Smart backfill** — Skip agents with no metadata, probe only recent/active ones
+1. **Redeploy web** — Push updated agents.json to GitHub Pages
 2. **Historical chart** — Show attestation count over time
-3. **Moltbook integration** — Auto-post new attestations to m/buildlogs
-4. **Re-probe stale agents** — Check if >7 days old, refresh scores
+3. **Re-probe stale agents** — Check if >7 days old, refresh scores
+4. **Lower threshold experiment** — Try 40 instead of 50 to attest more
 
 ## Stretch Goals
 - Agent comparison view
@@ -26,12 +26,14 @@
 - [x] README for hackathon
 - [x] Manifesto repo cleaned up
 - [x] Moltbook posting working
+- [x] Backfill script fixed (skips old empty agents)
 
 ## Lessons Learned
 - Moltbook API: use short content, avoid markdown special chars
 - Old ERC-8004 registrations (token #0-#100) are mostly empty
 - EAS on Base is cheap (~0.000015 ETH per attestation)
-- Backfill needs smarter filtering, not just "scan all blocks"
+- Most recent agents score 20-40 (below 50 threshold)
+- Backfill filter: tokenId >= 20000
 
 ---
-*Last updated: 2026-02-03 15:48*
+*Last updated: 2026-02-03 16:26*
