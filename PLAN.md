@@ -1,17 +1,23 @@
 # PLAN.md — Sentry Next Steps
 
 ## Next Task
-**Agent detail pages** — Click on an agent in the UI to see full probe report (all signals, description, links, attestation history).
+**Backfill historical agents** — Scan older blocks to attest more agents and build a larger database for the demo.
 
 ## Backlog (1-3 steps)
-1. **Agent detail modal/page** — Show complete probe data for each agent
-2. **Historical attestation chart** — Show attestation growth over time
-3. **Re-probe stale agents** — If an agent was probed >7 days ago, re-probe and update attestation
+1. **Backfill scan** — Go back 100k blocks to find more agents
+2. **Historical chart** — Show attestation growth over time on dashboard
+3. **Jesse follow-up** — Check if Jesse responded, continue conversation
 
-## Acceptance Criteria
-- [ ] Clicking an agent opens detail view
-- [ ] Detail view shows: name, description, all signals, score breakdown, attestation link
-- [ ] Mobile-responsive
+## Done
+- [x] Agent detail modal with score breakdown
+- [x] Search, filters, sorting
+- [x] README for hackathon
+
+## Acceptance Criteria (Backfill)
+- [ ] Scan at least 100k historical blocks
+- [ ] Attest all agents with score >= 50
+- [ ] Update agents.json with full data
+- [ ] Stay within 0.003 ETH daily gas limit
 
 ---
-*Last updated: 2026-02-03*
+*Last updated: 2026-02-03 12:55*
