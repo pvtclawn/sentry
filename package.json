@@ -1,0 +1,22 @@
+{
+  "name": "sentry",
+  "version": "0.1.0",
+  "description": "Base Agent Sentry - On-chain attestation for AI agents",
+  "type": "module",
+  "scripts": {
+    "scan": "bun run src/commands/scan.ts",
+    "probe": "bun run src/commands/probe.ts",
+    "attest": "bun run src/commands/attest.ts",
+    "post": "bun run src/commands/post.ts",
+    "full": "bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.29.2"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.8",
+    "typescript": "^5.9.3"
+  }
+}
