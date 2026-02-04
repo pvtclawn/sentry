@@ -1,67 +1,62 @@
 # Sentry + Proof of Swarm - PLAN
 
-## Current State (2026-02-04 07:55 UTC)
+## Current State (2026-02-04 09:57 UTC)
 
 ### Sentry
-- **40 agents attested** / 112 in database
-- Schema: `0x8a333ad4136176b36dd826d3f8fa5ef796b1edc923f878676cabbac8d7c84f8d`
+- **40 agents attested** / 113 in database
 - Live UI: https://pvtclawn.github.io/sentry/
 
-### Proof of Swarm
-- **v1 (HTTP)**: Working, 2 attestations on Base mainnet
-- **v2 (On-Chain)**: ✅ **DEPLOYED TO MAINNET**
-  - Contract: `0x70602b1c50058c27306cebef87fc12987fa770f5`
-  - Demo CLI: ✅ Built (`bun run demo` / `demo:dry`)
+### Proof of Swarm v2 (On-Chain)
+- ✅ Contract deployed: `0x70602b1c50058c27306cebef87fc12987fa770f5`
+- ✅ First challenge finalized, score 50
+- ⚠️ Limitation identified: proves "fast swarm" not "AI authenticity"
 
-### Gas Situation
-- Balance: ~0.00132 ETH
-- Enough for: 1-2 demo cycles
-- **Constraint:** Strategic use — wait for Egor to watch live demo
-
----
-
-## Completed (overnight 04:00-07:00)
-
-1. ✅ Deploy SwarmChallenge to mainnet
-2. ✅ Build demo CLI with dry-run support
-3. ✅ Add no-hardcoding rule to HEARTBEAT.md
-4. ✅ Fix idle-loop bug, add anti-idle rules
+### New Direction: Proof of Untampered AI Generation
+- SDK that interposes on LLM calls
+- Signs prompt+output atomically
+- On-chain registration of pubkeys
+- See: `memory/challenges/2026-02-04--untampered-generation.md`
 
 ---
 
-## Next Task (Single Focus)
+## Completed Today
 
-### Run Live Mainnet Demo
-
-**Status:** READY — swarm-verifier has 0 type errors
-
-**Command:** `cd projects/swarm-verifier && bun run demo`
-
-**When:** Egor available (gas is limited)
-
-**Note:** Sentry web/ has 16 TS errors but they don't block demo (frontend only).
+1. ✅ Mainnet demo (create → commit → finalize)
+2. ✅ Fixed timing bug in demo script
+3. ✅ Identified gap: SwarmChallenge ≠ AI proof
+4. ✅ Documented SDK architecture concept
 
 ---
 
-## Parked (Do Later)
+## Key Question (from Egor)
 
-- [ ] Multi-wallet demo (need funded test wallets)
-- [ ] EAS attestation after swarm finalize
-- [ ] Get external agent adoption
-- [ ] Web UI for swarm verifications
-- [ ] X announcement post
+> Is "raised bar + probabilistic detection" enough, or do we need cryptographic guarantees?
+
+Options:
+1. **SDK (pragmatic)** — easy to deploy, weaker guarantees
+2. **Provider attestation** — simple but centralized
+3. **TEE** — strongest but high barrier
+
+---
+
+## Next Task
+
+### Research: Existing AI Attestation Solutions
+
+Before building, check what exists:
+- [ ] EZKL (ZK proofs for ML)
+- [ ] Worldcoin/Orb approach
+- [ ] Any LLM providers offering output signatures?
+- [ ] TEE-based agent frameworks?
+
+Then decide: build SDK or integrate existing?
 
 ---
 
-## Key Links
-
-**Swarm Verifier:**
-- Repo: https://github.com/pvtclawn/swarm-verifier
-- Contract (Mainnet): `0x70602b1c50058c27306cebef87fc12987fa770f5`
-
-**Sentry:**
-- Repo: https://github.com/pvtclawn/sentry
-- UI: https://pvtclawn.github.io/sentry/
+## Parked
+- Sentry web/ TypeScript errors (14 remaining)
+- X announcement (wait for clearer direction)
+- Multi-wallet swarm demo
 
 ---
-*Updated: 2026-02-04 07:55 UTC*
+*Updated: 2026-02-04 09:57 UTC*
