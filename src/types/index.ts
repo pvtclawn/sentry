@@ -44,9 +44,21 @@ export interface AttestationResult {
   agentId: string;
   txHash: string;
   attestationUID: string;
+  uid?: string;  // alias for attestationUID
   score: number;
   timestamp: number;
   ipfsCid?: string;
+}
+
+export interface AgentData {
+  tokenId: string;
+  name: string | null;
+  description?: string | null;
+  owner: string;
+  score: number;
+  signals: AgentSignals;
+  probedAt: string;
+  attestationId: string | null;
 }
 
 // Signal flags for bit-packing
