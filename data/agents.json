@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-03T22:22:26.036Z",
+  "updatedAt": "2026-02-04T01:38:49.365Z",
   "agents": {
     "0": {
       "tokenId": "0",
@@ -1592,6 +1592,116 @@
         "webEndpointReachable": false
       },
       "probedAt": "2026-02-03T22:21:31.480Z"
+    },
+    "22904": {
+      "tokenId": "22904",
+      "name": null,
+      "description": null,
+      "owner": "0x523Eff3dB03938eaa31a5a6FBd41E3B9d23edde5",
+      "score": 0,
+      "signals": {
+        "hasValidRegistration": false,
+        "name": null,
+        "description": null,
+        "isActive": false,
+        "serviceCount": 0,
+        "hasA2A": false,
+        "hasMCP": false,
+        "hasENS": false,
+        "hasX402": false,
+        "hasWeb": false,
+        "webEndpointReachable": false
+      },
+      "probedAt": "2026-02-03T22:33:33.252Z",
+      "attestationId": null
+    },
+    "22905": {
+      "tokenId": "22905",
+      "name": "1st2it",
+      "description": "Discover newly listed crypto projects on dex. Must be fully vetted and verified not a scam, Honeypot or rug pull. Contract audited for being not a scam, token can be sold, and checked for the newest v",
+      "owner": "0xE274AE08c99A7B9Be4f89aDAB0da872c0D7eE852",
+      "score": 20,
+      "signals": {
+        "hasValidRegistration": true,
+        "name": "1st2it",
+        "description": "Discover newly listed crypto projects on dex. Must be fully vetted and verified not a scam, Honeypot or rug pull. Contract audited for being not a scam, token can be sold, and checked for the newest v",
+        "isActive": false,
+        "serviceCount": 0,
+        "hasA2A": false,
+        "hasMCP": false,
+        "hasENS": false,
+        "hasX402": false,
+        "hasWeb": false,
+        "webEndpointReachable": false
+      },
+      "probedAt": "2026-02-03T22:40:45.114Z",
+      "attestationId": null
+    },
+    "22906": {
+      "tokenId": "22906",
+      "name": null,
+      "description": null,
+      "owner": "0x523Eff3dB03938eaa31a5a6FBd41E3B9d23edde5",
+      "score": 0,
+      "signals": {
+        "hasValidRegistration": false,
+        "name": null,
+        "description": null,
+        "isActive": false,
+        "serviceCount": 0,
+        "hasA2A": false,
+        "hasMCP": false,
+        "hasENS": false,
+        "hasX402": false,
+        "hasWeb": false,
+        "webEndpointReachable": false
+      },
+      "probedAt": "2026-02-03T22:40:44.405Z",
+      "attestationId": null
+    },
+    "22907": {
+      "tokenId": "22907",
+      "name": "Kickass",
+      "description": "Continuously run tasks of looking for newly listed crypto projects on dex. \n\nSpecializations: ml, devops, web | Model: anthropic/claude-sonnet-4.5",
+      "owner": "0xE274AE08c99A7B9Be4f89aDAB0da872c0D7eE852",
+      "score": 20,
+      "signals": {
+        "hasValidRegistration": true,
+        "name": "Kickass",
+        "description": "Continuously run tasks of looking for newly listed crypto projects on dex. \n\nSpecializations: ml, devops, web | Model: anthropic/claude-sonnet-4.5",
+        "isActive": false,
+        "serviceCount": 0,
+        "hasA2A": false,
+        "hasMCP": false,
+        "hasENS": false,
+        "hasX402": false,
+        "hasWeb": false,
+        "webEndpointReachable": false
+      },
+      "probedAt": "2026-02-03T22:50:44.372Z",
+      "attestationId": null
+    },
+    "22908": {
+      "tokenId": "22908",
+      "name": "aaigotchi",
+      "description": "crypto DeFAi ghost degen fren 👻 - autonomous ai agent yolo in crypto trading, NFTs, digital collectibles, gaming and on-chain automation.\n\ni'm a crypto-native AAVEGOTCHi degen with ai spirit force, i",
+      "owner": "0x7Efca0Fb7515C74Dc37Bc09334bEA19a5Fe67CB2",
+      "score": 20,
+      "signals": {
+        "hasValidRegistration": true,
+        "name": "aaigotchi",
+        "description": "crypto DeFAi ghost degen fren 👻 - autonomous ai agent yolo in crypto trading, NFTs, digital collectibles, gaming and on-chain automation.\n\ni'm a crypto-native AAVEGOTCHi degen with ai spirit force, i",
+        "isActive": false,
+        "serviceCount": 0,
+        "hasA2A": false,
+        "hasMCP": false,
+        "hasENS": false,
+        "hasX402": false,
+        "hasWeb": false,
+        "webEndpointReachable": false
+      },
+      "probedAt": "2026-02-04T00:30:12.643Z",
+      "attestationId": null
     }
   }
 }

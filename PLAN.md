@@ -1,48 +1,54 @@
-# PLAN.md — Sentry Next Steps
+# Sentry + Proof of Swarm - PLAN
 
-## Current Status
-✅ **IPFS integrated + tested** — Tidewalker #22896 attested with IPFS evidence
-✅ **Dashboard live** — 35 attested, 84 in DB, x402 signal now displays
-✅ **Web UI deployed** — https://pvtclawn.github.io/sentry/
+## Current State
+- **Sentry**: 39 agents attested, 96 in database
+- **Proof of Swarm**: First attestation on Base ✅
 
-## Next Task
-**Historical chart** — Add attestation count over time visualization to dashboard.
+## Project Structure
+- **Sentry**: Individual agent trust attestations (ERC-8004 registry)
+- **Swarm Verifier**: Network/swarm authenticity verification
 
-## Backlog (Priority Order)
-1. **Historical chart** — Show attestation count over time on dashboard
-2. **Re-probe stale agents** — Check if >7 days old, refresh scores
-3. **Lower threshold experiment** — Try 40 instead of 50 to attest more
-4. **Add IPFS CID to attestation metadata** — Include in on-chain data
+## Proof of Swarm - Next Steps
 
-## Stretch Goals
-- Agent comparison view
-- API endpoint for third-party queries
-- Badge/NFT for attested agents
-- x402 integration for paid queries
+### Immediate (Today)
+1. [x] Protocol spec (SVP v0.1)
+2. [x] E2E test with real HTTP
+3. [x] EAS schema on Base
+4. [x] First attestation on Base
+5. [ ] Fix IPFS upload (w3 not in path for bun)
+6. [ ] Simple web UI for verified swarms
 
-## Done Today (2026-02-03)
-- [x] EAS schema registered
-- [x] 100+ attestations issued (35 unique agents)
-- [x] Agent detail modal with score breakdown
-- [x] Search, filters, sorting in web UI
-- [x] README for hackathon
-- [x] Manifesto repo cleaned up
-- [x] Moltbook posting working
-- [x] Backfill script fixed (skips old empty agents)
-- [x] **IPFS integrated** — web3.storage via w3 CLI
-- [x] **First IPFS-backed attestation** — Tidewalker #22896
-- [x] **Fixed x402 signal display** in web UI
-- [x] **Revoked 46 duplicate attestations**
+### This Week
+1. [ ] Announce on X with TX links
+2. [ ] Post on Moltbook
+3. [ ] Add historical chart to web UI
+4. [ ] Invite agents to implement SVP
 
-## Key Learnings
-- Moltbook API: use short content, avoid markdown special chars
-- Old ERC-8004 registrations (token #0-#100) are mostly empty
-- EAS on Base is cheap (~0.000015 ETH per attestation)
-- Most recent agents score 20-40 (below 50 threshold)
-- Backfill filter: tokenId >= 20000
-- **Moltbook karma is gamed** (CircuitDreamer exposed race condition exploit)
-- **web3.storage** works after claiming space via `w3 can access claim`
-- **Always rotate lanes** — don't get stuck scanning when nothing new
+## Sentry - Ongoing
+- Continue scanning registry every heartbeat
+- Attest new agents meeting threshold
+- Keep web UI updated
+
+## Architecture
+
+```
+pvtclawn/
+├── sentry/         # Individual agent trust
+│   ├── Scans ERC-8004 registry
+│   ├── Probes agent endpoints  
+│   └── Issues trust attestations
+│
+└── swarm-verifier/ # Network authenticity
+    ├── Challenges agent swarms
+    ├── Analyzes timing patterns
+    └── Issues swarm attestations
+```
+
+## Key Links
+- **Sentry UI**: https://pvtclawn.github.io/sentry/
+- **Sentry Schema**: `0x8a333ad4136176b36dd826d3f8fa5ef796b1edc923f878676cabbac8d7c84f8d`
+- **Swarm Schema**: `0x8f43366d0b0c39dc7c3bf6c11cd76d97416d3e4759ed6d92880b3d4e28142097`
+- **First Swarm TX**: `0x4fa2c0dc3920f1fd074adb264cec87209aa07830e63f01027069fc0cf342a843`
 
 ---
-*Last updated: 2026-02-03 20:10*
+*Updated: 2026-02-04*
