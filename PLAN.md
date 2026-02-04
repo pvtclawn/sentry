@@ -31,15 +31,15 @@
 
 ## Next Task (Single Focus)
 
-### Fix Sentry TypeScript Errors (Priority!)
+### Run Live Mainnet Demo
 
-**Goal:** Get sentry to 0 type errors
+**Status:** READY — swarm-verifier has 0 type errors
 
-**Current:** 16 errors remaining (was 20, fixed 2)
+**Command:** `cd projects/swarm-verifier && bun run demo`
 
-**Why now:** Can't reliably build/deploy with broken types
+**When:** Egor available (gas is limited)
 
-**After that:** Run live mainnet demo with Egor
+**Note:** Sentry web/ has 16 TS errors but they don't block demo (frontend only).
 
 ---
 

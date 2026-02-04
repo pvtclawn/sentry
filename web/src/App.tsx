@@ -42,7 +42,7 @@ function App() {
     async function load() {
       try {
         const [agentsRes, totalCount, rawAttestations] = await Promise.all([
-          fetch('./agents.json').then(r => r.ok ? r.json() : { agents: {} }),
+          fetch('./agents.json').then(r => r.ok ? r.json() : { agents: {} }) as Promise<AgentsDatabase>,
           getAttestationCount(),
           fetchAttestations(),
         ]);
