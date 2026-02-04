@@ -31,19 +31,15 @@
 
 ## Next Task (Single Focus)
 
-### Run Live Mainnet Demo (with Egor watching)
+### Fix Sentry TypeScript Errors (Priority!)
 
-**Goal:** Execute first real challenge on mainnet
+**Goal:** Get sentry to 0 type errors
 
-**When:** Egor says go (gas is limited)
+**Current:** 16 errors remaining (was 20, fixed 2)
 
-**Command:** `cd projects/swarm-verifier && bun run demo`
+**Why now:** Can't reliably build/deploy with broken types
 
-**Expected output:**
-- Challenge created on-chain
-- 1 commit + reveal (single wallet limitation)
-- Finalized with score
-- All tx links to basescan
+**After that:** Run live mainnet demo with Egor
 
 ---
 

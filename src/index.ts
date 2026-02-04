@@ -102,7 +102,7 @@ async function main() {
       
       // Update attestation ID in agents data
       if (agentsData.agents[probe.agentId]) {
-        agentsData.agents[probe.agentId].attestationId = result.uid;
+        agentsData.agents[probe.agentId].attestationId = result.attestationUID ?? result.uid ?? null;
       }
       
       markAttested(state, probe.agentId);

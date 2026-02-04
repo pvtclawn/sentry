@@ -114,7 +114,7 @@ async function main() {
           const result = await attestAgent(probe);
           console.log(`    ✅ TX: ${formatTxLink(result.txHash)}`);
           
-          agentsData.agents[probe.agentId].attestationId = result.uid;
+          agentsData.agents[probe.agentId].attestationId = result.attestationUID ?? result.uid ?? null;
           markAttested(state, probe.agentId);
           attested++;
           
